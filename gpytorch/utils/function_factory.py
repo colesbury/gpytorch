@@ -267,7 +267,7 @@ def exact_gp_mll_factory(matmul_closure_factory=_default_matmul_closure_factory,
             slq = StochasticLQ()
             logdet, = slq.evaluate(t_mat, eigenvalues, eigenvectors, [lambda x: x.log()])
 
-            res += logdet
+            res += logdet.squeeze(-1)
             res += math.log(2 * math.pi) * labels.size(-2)
             res *= -0.5
 

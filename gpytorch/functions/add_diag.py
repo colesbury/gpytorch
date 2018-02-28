@@ -1,5 +1,5 @@
 import torch
-from torch.autograd import Function
+from torch.autograd import Function, Variable
 
 
 class AddDiag(Function):
@@ -8,7 +8,7 @@ class AddDiag(Function):
             raise RuntimeError('Input must be a single-element tensor')
         val = diag.squeeze()[0]
 
-        diag_mat = torch.eye(input.size(-2), input.size(-1)).type_as(input)
+        diag_mat = Variable(torch.eye(input.size(-2), input.size(-1)).type_as(input))
         if input.ndimension() == 3:
             diag_mat = diag_mat.unsqueeze(0).expand_as(input)
         return diag_mat.mul_(val).add_(input)

@@ -1,4 +1,5 @@
 import torch
+from torch.autograd import Variable
 
 
 def lanczos_tridiag(matmul_closure, max_iter, tol=1e-5, init_vecs=None,
@@ -57,12 +58,12 @@ def lanczos_tridiag(matmul_closure, max_iter, tol=1e-5, init_vecs=None,
     # q_mat - batch version of Q - orthogonal matrix of decomp
     # alpha - batch version main diagonal of T
     # beta - batch version of off diagonal of T
-    q_mat = tensor_cls(n_iter, batch_size, n_dims, n_init_vecs).zero_()
-    t_mat = tensor_cls(n_iter, n_iter, batch_size, n_init_vecs).zero_()
+    q_mat = Variable(tensor_cls(n_iter, batch_size, n_dims, n_init_vecs).zero_())
+    t_mat = Variable(tensor_cls(n_iter, n_iter, batch_size, n_init_vecs).zero_())
 
     # Begin algorithm
     # Initial Q vector: q_0_vec
-    q_0_vec = init_vecs / torch.norm(init_vecs, 2, dim=dim_dimension).unsqueeze(dim_dimension)
+    q_0_vec = Variable(init_vecs / torch.norm(init_vecs, 2, dim=dim_dimension).unsqueeze(dim_dimension))
     q_mat[0].copy_(q_0_vec)
 
     # Initial alpha value: alpha_0
@@ -78,7 +79,7 @@ def lanczos_tridiag(matmul_closure, max_iter, tol=1e-5, init_vecs=None,
     t_mat[0, 1].copy_(beta_0)
     t_mat[1, 0].copy_(beta_0)
 
-    # Compute teh first new vector
+    # Compute the first new vector
     q_mat[1].copy_(r_vec.div_(beta_0.unsqueeze(dim_dimension)))
 
     # Now we start the iteration
